@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const api = axios.create({ baseURL: 'http://localhost:5000/api' });
+export const api = axios.create({ baseURL: 'https://qwipo-backend.onrender.com/api' });
 
 export function handleError(err) {
   if (err.response && err.response.data && err.response.data.message) {
