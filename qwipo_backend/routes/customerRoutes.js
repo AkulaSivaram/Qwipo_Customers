@@ -1,12 +1,25 @@
 const express = require("express");
-const { getCustomers, getCustomerById, createCustomer, updateCustomer, deleteCustomer } = require("../controllers/customerController");
 
-const router = express.Router();
+module.exports = (db) => {
+  const router = express.Router();
 
-router.get("/", getCustomers);
-router.get("/:id", getCustomerById);
-router.post("/", createCustomer);
-router.put("/:id", updateCustomer);
-router.delete("/:id", deleteCustomer);
+  // Create customer
+  router.post("/", (req, res) => {
+    const { name, email, phone } = req.body;
+    const query = `INSERT INTO customers (name, email, phone) VALUES (?, ?, ?)`;
+    db.run(query, [name, email, phone], function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.status(201).json({ id: this.lastID, name, email, phone });
+    });
+  });
 
-module.exports = router;
+  // Get all customers
+  router.get("/", (req, res) => {
+    db.all(`SELECT * FROM customers ORDER BY created_at DESC`, [], (err, rows) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json(rows);
+    });
+  });
+
+  return router;
+};
